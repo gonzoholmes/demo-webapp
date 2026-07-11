@@ -14,7 +14,7 @@ resource "aws_security_group" "mongodb" {
   ingress {
     description = "MongoDB from EKS private subnets only"
     from_port   = 27017
-    to_port     = 27017
+    to_port     = 27777
     protocol    = "tcp"
     cidr_blocks = module.vpc.private_subnets_cidr_blocks
   }
