@@ -1,3 +1,4 @@
+# Testing Pipeline A (plan-on-PR / apply-on-merge)
 output "mongodb_private_ip" {
   value = aws_instance.mongodb.private_ip
 }
