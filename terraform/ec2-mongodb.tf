@@ -1,0 +1,82 @@
+resource "aws_security_group" "mongodb" {
+  name_prefix = "mongodb-"
+  description = "Allow SSH and MongoDB access from within the VPC"
+  vpc_id      = module.vpc.vpc_id
+
+  ingress {
+    description = "SSH open to the internet (intentional lab misconfiguration)"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "MongoDB from EKS private subnets only"
+    from_port   = 27017
+    to_port     = 27017
+    protocol    = "tcp"
+    cidr_blocks = module.vpc.private_subnets_cidr_blocks
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Terraform = "true"
+    Environment = "dev"
+  }
+}
+
+resource "tls_private_key" "mongodb" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
+resource "aws_key_pair" "mongodb" {
+  key_name   = "mongodb-key"
+  public_key = tls_private_key.mongodb.public_key_openssh
+}
+
+resource "local_sensitive_file" "mongodb_private_key" {
+  filename        = "${path.module}/mongodb-key.pem"
+  content         = tls_private_key.mongodb.private_key_pem
+  file_permission = "0400"
+}
+
+resource "random_password" "mongodb_app" {
+  length  = 24
+  special = false
+}
+
+resource "local_sensitive_file" "mongodb_app_password" {
+  filename        = "${path.module}/mongodb-app-password.txt"
+  content         = random_password.mongodb_app.result
+  file_permission = "0400"
+}
+
+resource "aws_instance" "mongodb" {
+  # al2023-ami-2023.7.20250623.1-kernel-6.1-x86_64, deprecated on-purpose (~1yr old) for patching practice
+  ami                         = "ami-05ffe3c48a9991133"
+  instance_type               = "t3.micro"
+  subnet_id                   = module.vpc.public_subnets[0]
+  vpc_security_group_ids      = [aws_security_group.mongodb.id]
+  associate_public_ip_address = true
+  key_name                    = aws_key_pair.mongodb.key_name
+  iam_instance_profile        = aws_iam_instance_profile.mongodb_ec2.name
+  user_data = templatefile("${path.module}/userdata-mongodb.sh", {
+    bucket_name        = module.s3_bucket.s3_bucket_id
+    mongo_app_user     = "starsigns_app"
+    mongo_app_password = random_password.mongodb_app.result
+  })
+
+  tags = {
+    Name        = "mongodb"
+    Terraform   = "true"
+    Environment = "dev"
+  }
+}

@@ -1,0 +1,86 @@
+# starsigns-secret not committed — create before applying:
+#   kubectl create secret generic starsigns-secret \
+#     --from-literal=MONGO_URI="mongodb://starsigns_app:$(terraform -chdir=../terraform output -raw mongodb_app_password)@$(terraform -chdir=../terraform output -raw mongodb_private_ip):27017/starsigns" \
+#     --dry-run=client -o yaml | kubectl apply -f -
+# Re-run after every terraform apply (IP/password change on redeploy).
+
+---
+# Intentional lab misconfiguration: bound to cluster-admin.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: starsigns-app
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: starsigns-app-cluster-admin
+subjects:
+  - kind: ServiceAccount
+    name: starsigns-app
+    namespace: default
+roleRef:
+  kind: ClusterRole
+  name: cluster-admin
+  apiGroup: rbac.authorization.k8s.io
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: starsigns-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: starsigns-app
+  template:
+    metadata:
+      labels:
+        app: starsigns-app
+    spec:
+      serviceAccountName: starsigns-app
+      containers:
+        - name: starsigns-app
+          image: 375066138214.dkr.ecr.us-east-1.amazonaws.com/ecr-demo-webapp:latest
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - secretRef:
+                name: starsigns-secret
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: starsigns-app
+spec:
+  selector:
+    app: starsigns-app
+  ports:
+    - port: 80
+      targetPort: 8080
+
+---
+# EKS Auto Mode provisions the ALB automatically. If it doesn't attach,
+# check `kubectl get ingressclass` matches `alb` below.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: starsigns-app
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+spec:
+  ingressClassName: alb
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: starsigns-app
+                port:
+                  number: 80

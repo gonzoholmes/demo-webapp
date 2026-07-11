@@ -1,0 +1,21 @@
+# macOS
+.DS_Store
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+
+# Secrets / generated credentials
+*.pem
+mongodb-app-password.txt
+
+# Claude Code
+.claude/
+CLAUDE.md
+CICD_PLAN.md
+
+# Python
+__pycache__/
+*.pyc
