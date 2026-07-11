@@ -15,6 +15,7 @@ mongodb-app-password.txt
 .claude/
 CLAUDE.md
 CICD_PLAN.md
+PIPELINE_OVERVIEW.md
 
 # Python
 __pycache__/
