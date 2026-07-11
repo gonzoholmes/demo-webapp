@@ -27,7 +27,7 @@ resource "aws_security_group" "mongodb" {
   }
 
   tags = {
-    Terraform = "true"
+    Terraform   = "true"
     Environment = "dev"
   }
 }
