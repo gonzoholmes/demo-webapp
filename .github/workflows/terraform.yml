@@ -1,4 +1,6 @@
-name: terraform
+name: Terraform Pipeline
+
+run-name: "${{ github.event_name == 'pull_request' && format('plan · {0}', github.event.pull_request.title) || format('apply · {0}', github.event.head_commit.message) }}"
 
 on:
   pull_request:
