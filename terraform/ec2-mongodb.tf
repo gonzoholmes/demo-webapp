@@ -42,10 +42,14 @@ resource "aws_key_pair" "mongodb" {
   public_key = tls_private_key.mongodb.public_key_openssh
 }
 
-resource "local_sensitive_file" "mongodb_private_key" {
-  filename        = "${path.module}/mongodb-key.pem"
-  content         = tls_private_key.mongodb.private_key_pem
-  file_permission = "0400"
+resource "aws_secretsmanager_secret" "mongodb_ssh_private_key" {
+  name                    = "wizlab/mongodb-ssh-private-key"
+  recovery_window_in_days = 0
+}
+
+resource "aws_secretsmanager_secret_version" "mongodb_ssh_private_key" {
+  secret_id     = aws_secretsmanager_secret.mongodb_ssh_private_key.id
+  secret_string = tls_private_key.mongodb.private_key_pem
 }
 
 resource "random_password" "mongodb_app" {
@@ -53,10 +57,14 @@ resource "random_password" "mongodb_app" {
   special = false
 }
 
-resource "local_sensitive_file" "mongodb_app_password" {
-  filename        = "${path.module}/mongodb-app-password.txt"
-  content         = random_password.mongodb_app.result
-  file_permission = "0400"
+resource "aws_secretsmanager_secret" "mongodb_app_password" {
+  name                    = "wizlab/mongodb-app-password"
+  recovery_window_in_days = 0
+}
+
+resource "aws_secretsmanager_secret_version" "mongodb_app_password" {
+  secret_id     = aws_secretsmanager_secret.mongodb_app_password.id
+  secret_string = random_password.mongodb_app.result
 }
 
 resource "aws_instance" "mongodb" {

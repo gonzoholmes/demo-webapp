@@ -1,4 +1,3 @@
-# Testing Pipeline A (plan-on-PR / apply-on-merge)
 output "mongodb_private_ip" {
   value = aws_instance.mongodb.private_ip
 }
@@ -10,6 +9,14 @@ output "mongodb_public_ip" {
 output "mongodb_app_password" {
   value     = random_password.mongodb_app.result
   sensitive = true
+}
+
+output "mongodb_app_password_secret_arn" {
+  value = aws_secretsmanager_secret.mongodb_app_password.arn
+}
+
+output "mongodb_ssh_private_key_secret_arn" {
+  value = aws_secretsmanager_secret.mongodb_ssh_private_key.arn
 }
 
 output "ecr_repository_url" {
