@@ -74,8 +74,54 @@ jobs:
         if: steps.plan.outcome == 'failure'
         run: exit 1
 
+  plan-before-apply:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.15.7"
+
+      - name: Configure AWS credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::375066138214:role/github-actions-plan
+          aws-region: us-east-1
+
+      - name: Terraform init
+        run: terraform init -input=false
+
+      - name: Terraform plan
+        id: plan
+        run: terraform plan -no-color -input=false
+        continue-on-error: true
+
+      - name: Write plan to job summary
+        env:
+          PLAN_OUTPUT: "${{ steps.plan.outputs.stdout }}"
+        run: |
+          {
+            echo "### Terraform Plan — about to be applied"
+            echo '<details open><summary>Show plan</summary>'
+            echo ''
+            echo '```'
+            echo "$PLAN_OUTPUT"
+            echo '```'
+            echo '</details>'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Fail if plan errored
+        if: steps.plan.outcome == 'failure'
+        run: exit 1
+
   apply:
     if: github.event_name == 'push'
+    needs: plan-before-apply
     runs-on: ubuntu-latest
     environment: Production
     permissions:
