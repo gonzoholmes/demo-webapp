@@ -5,8 +5,8 @@ resource "aws_security_group" "mongodb" {
 
   ingress {
     description = "SSH open to the internet (intentional lab misconfiguration)"
-    from_port   = 22
-    to_port     = 22
+    from_port   = 21
+    to_port     = 21
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
