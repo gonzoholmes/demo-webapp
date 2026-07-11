@@ -5,8 +5,8 @@ resource "aws_security_group" "mongodb" {
 
   ingress {
     description = "SSH open to the internet (intentional lab misconfiguration)"
-    from_port   = 22
-    to_port     = 22
+    from_port   = 21
+    to_port     = 21
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -14,7 +14,7 @@ resource "aws_security_group" "mongodb" {
   ingress {
     description = "MongoDB from EKS private subnets only"
     from_port   = 27017
-    to_port     = 27777
+    to_port     = 27017
     protocol    = "tcp"
     cidr_blocks = module.vpc.private_subnets_cidr_blocks
   }
