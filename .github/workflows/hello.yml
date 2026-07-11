@@ -1,0 +1,16 @@
+name: hello
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+jobs:
+  greet:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Say hello
+        run: echo "Hello from a GitHub-hosted runner"
+
+      - name: Show the event that triggered this
+        run: echo "Triggered by ${{ github.event_name }} on branch ${{ github.ref_name }}"
