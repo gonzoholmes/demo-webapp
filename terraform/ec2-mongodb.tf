@@ -28,7 +28,7 @@ resource "aws_security_group" "mongodb" {
 
   tags = {
     Terraform   = "true"
-    Environment = "dev"
+    Environment = "Production"
   }
 }
 
@@ -85,6 +85,6 @@ resource "aws_instance" "mongodb" {
   tags = {
     Name        = "mongodb"
     Terraform   = "true"
-    Environment = "dev"
+    Environment = "Production"
   }
 }
