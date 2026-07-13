@@ -1,7 +1,6 @@
-# One-time bootstrap — apply manually with your own credentials:
+# One-time bootstrap, apply manually — github-actions-deploy has no
+# cluster-scoped permissions, so CI can't manage these resources:
 #   kubectl apply -f k8s/cluster-bootstrap.yaml
-# github-actions-deploy is scoped to namespace-level edit only (no
-# cluster-scoped permissions), so CI can't manage any of these resources.
 
 ---
 # Intentional lab misconfiguration: bound to cluster-admin.
@@ -25,9 +24,7 @@ roleRef:
   apiGroup: rbac.authorization.k8s.io
 
 ---
-# EKS Auto Mode installs the ALB controller + CRDs, but does not create
-# this IngressClass automatically — it must be defined explicitly, same
-# as a StorageClass still needs defining even once a CSI driver exists.
+# EKS Auto Mode doesn't create this automatically — must be defined explicitly.
 apiVersion: networking.k8s.io/v1
 kind: IngressClass
 metadata:

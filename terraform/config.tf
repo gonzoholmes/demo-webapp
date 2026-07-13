@@ -81,7 +81,6 @@ resource "aws_config_configuration_recorder_status" "this" {
   depends_on = [aws_config_delivery_channel.this]
 }
 
-# Detects the seeded public-read mongo-backups bucket.
 resource "aws_config_config_rule" "s3_bucket_public_read_prohibited" {
   name = "s3-bucket-public-read-prohibited"
 
@@ -93,7 +92,6 @@ resource "aws_config_config_rule" "s3_bucket_public_read_prohibited" {
   depends_on = [aws_config_configuration_recorder.this]
 }
 
-# Detects the seeded 0.0.0.0/0 SSH ingress rule.
 resource "aws_config_config_rule" "restricted_ssh" {
   name = "restricted-ssh"
 
@@ -105,9 +103,8 @@ resource "aws_config_config_rule" "restricted_ssh" {
   depends_on = [aws_config_configuration_recorder.this]
 }
 
-# Detects the seeded AmazonEC2FullAccess attachment on the Mongo VM's role.
-# (IAM_POLICY_NO_STATEMENTS_WITH_ADMIN_ACCESS only evaluates customer-managed
-# policies, not AWS-managed ones like this, hence the blacklist rule instead.)
+# IAM_POLICY_NO_STATEMENTS_WITH_ADMIN_ACCESS won't catch this — it only
+# evaluates customer-managed policies, not AWS-managed ones like this.
 resource "aws_config_config_rule" "iam_policy_blacklisted" {
   name = "iam-policy-blacklisted-check"
 
