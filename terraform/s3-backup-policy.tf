@@ -36,8 +36,7 @@ resource "aws_iam_instance_profile" "mongodb_ec2" {
   role = aws_iam_role.mongodb_ec2.name
 }
 
-# Intentional lab misconfiguration: VM role is far broader than it needs
-# (can create/manage EC2 resources, not just back up to S3).
+# Intentional: VM role is overpermissive
 resource "aws_iam_role_policy_attachment" "mongodb_ec2_full_access" {
   role       = aws_iam_role.mongodb_ec2.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2FullAccess"

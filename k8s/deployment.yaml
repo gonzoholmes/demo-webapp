@@ -1,10 +1,10 @@
-# starsigns-secret not committed — create before applying:
+# starsigns-secret not committed — create before applying (re-run after
+# every terraform apply, since IP/password change on redeploy):
 #   kubectl create secret generic starsigns-secret \
 #     --from-literal=MONGO_URI="mongodb://starsigns_app:$(terraform -chdir=../terraform output -raw mongodb_app_password)@$(terraform -chdir=../terraform output -raw mongodb_private_ip):27017/starsigns" \
 #     --dry-run=client -o yaml | kubectl apply -f -
-# Re-run after every terraform apply (IP/password change on redeploy).
 #
-# Requires k8s/cluster-bootstrap.yaml applied first (ServiceAccount + alb IngressClass).
+# Requires k8s/cluster-bootstrap.yaml applied first.
 
 ---
 apiVersion: apps/v1

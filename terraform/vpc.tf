@@ -11,8 +11,7 @@ module "vpc" {
   enable_nat_gateway = true
   enable_vpn_gateway = false
 
-  # Required for the ALB controller to auto-discover which subnets to place
-  # load balancers in.
+  # Needed for ALB subnet auto-discovery.
   public_subnet_tags = {
     "kubernetes.io/role/elb" = "1"
   }
