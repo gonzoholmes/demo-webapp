@@ -5,11 +5,7 @@ module "eks" {
   name               = "eks-demo-webapp"
   kubernetes_version = "1.33"
 
-  # Public API open to any IP: GitHub Actions runners use unpredictable,
-  # dynamic addresses, so a single-IP allowlist blocks CI's kubectl calls
-  # entirely (connections time out at the network layer before auth is
-  # even attempted). Actual authorization is still enforced by IAM access
-  # entries + Kubernetes RBAC, not network reachability.
+  # Public API open to any IP for github runners
   endpoint_public_access       = true
   endpoint_public_access_cidrs = ["0.0.0.0/0"]
 

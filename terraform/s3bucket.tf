@@ -45,6 +45,8 @@ data "aws_iam_policy_document" "s3_public_read" {
 resource "aws_s3_bucket_policy" "public_read" {
   bucket = module.mongodb_bucket.s3_bucket_id
   policy = data.aws_iam_policy_document.s3_public_read.json
+
+  depends_on = [module.mongodb_bucket]
 }
 
 
