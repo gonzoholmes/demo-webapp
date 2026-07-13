@@ -1,6 +1,6 @@
 name: App Pipeline
 
-run-name: "${{ github.event_name == 'pull_request' && format('build+scan · {0}', github.event.pull_request.title) || format('deploy · {0}', github.event.head_commit.message) }}"
+run-name: "${{ github.event_name == 'pull_request' && format('build+scan · {0}', github.event.pull_request.title) || github.event_name == 'workflow_dispatch' && 'deploy · manual trigger' || format('deploy · {0}', github.event.head_commit.message) }}"
 
 on:
   pull_request:
@@ -9,6 +9,7 @@ on:
   push:
     branches: [main]
     paths: ["app/**"]
+  workflow_dispatch: {}
 
 jobs:
   build-and-scan:
@@ -37,7 +38,7 @@ jobs:
           exit-code: "1"
 
   build-push-deploy:
-    if: github.event_name == 'push'
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     permissions:
       id-token: write
