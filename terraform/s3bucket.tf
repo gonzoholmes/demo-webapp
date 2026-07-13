@@ -45,6 +45,11 @@ data "aws_iam_policy_document" "s3_public_read" {
 resource "aws_s3_bucket_policy" "public_read" {
   bucket = module.mongodb_bucket.s3_bucket_id
   policy = data.aws_iam_policy_document.s3_public_read.json
+
+  # Without this, Terraform sometimes attaches the public policy before the
+  # module's Block Public Access settings (disabled above) have actually
+  # taken effect, causing a transient AccessDenied on a fresh bucket.
+  depends_on = [module.mongodb_bucket]
 }
 
 

@@ -68,7 +68,7 @@ resource "aws_secretsmanager_secret_version" "mongodb_app_password" {
 }
 
 resource "aws_instance" "mongodb" {
-  # al2023-ami-2023.7.20250623.1-kernel-6.1-x86_64, deprecated on-purpose (~1yr old) for patching practice
+  # al2023-ami-2023.7.20250623.1-kernel-6.1-x86_64, (~1yr old)
   ami                         = "ami-05ffe3c48a9991133"
   instance_type               = var.mongodb_instance_type
   subnet_id                   = module.vpc.public_subnets[0]
