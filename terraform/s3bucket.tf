@@ -1,4 +1,4 @@
-module "s3_bucket" {
+module "mongodb_bucket" {
   source = "terraform-aws-modules/s3-bucket/aws"
 
   bucket = "s3-bucket-gholmes8585-demowebapp-mongobackups"
@@ -27,7 +27,7 @@ data "aws_iam_policy_document" "s3_public_read" {
       identifiers = ["*"]
     }
     actions   = ["s3:GetObject"]
-    resources = ["${module.s3_bucket.s3_bucket_arn}/*"]
+    resources = ["${module.mongodb_bucket.s3_bucket_arn}/*"]
   }
 
   statement {
@@ -38,12 +38,12 @@ data "aws_iam_policy_document" "s3_public_read" {
       identifiers = ["*"]
     }
     actions   = ["s3:ListBucket"]
-    resources = [module.s3_bucket.s3_bucket_arn]
+    resources = [module.mongodb_bucket.s3_bucket_arn]
   }
 }
 
 resource "aws_s3_bucket_policy" "public_read" {
-  bucket = module.s3_bucket.s3_bucket_id
+  bucket = module.mongodb_bucket.s3_bucket_id
   policy = data.aws_iam_policy_document.s3_public_read.json
 }
 

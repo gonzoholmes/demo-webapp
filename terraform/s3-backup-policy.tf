@@ -16,12 +16,12 @@ resource "aws_iam_role" "mongodb_ec2" {
 data "aws_iam_policy_document" "mongodb_s3_backup" {
   statement {
     actions   = ["s3:PutObject"]
-    resources = ["${module.s3_bucket.s3_bucket_arn}/*"]
+    resources = ["${module.mongodb_bucket.s3_bucket_arn}/*"]
   }
 
   statement {
     actions   = ["s3:ListBucket"]
-    resources = [module.s3_bucket.s3_bucket_arn]
+    resources = [module.mongodb_bucket.s3_bucket_arn]
   }
 }
 
