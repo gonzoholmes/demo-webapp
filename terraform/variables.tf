@@ -1,11 +1,9 @@
 variable "aws_region" {
   description = "AWS region to deploy into"
   type        = string
-  default     = "us-east-1"
 }
 
 variable "environment" {
   description = "Environment tag applied to resources"
   type        = string
-  default     = "Production"
 }
