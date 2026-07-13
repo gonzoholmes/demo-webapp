@@ -4,7 +4,7 @@ module "vpc" {
   name = "vpc-demo-webapp"
   cidr = "10.0.0.0/16"
 
-  azs             = ["us-east-1a", "us-east-1b"]
+  azs             = ["${var.aws_region}a", "${var.aws_region}b"]
   private_subnets = ["10.0.20.0/24", "10.0.21.0/24"]
   public_subnets  = ["10.0.10.0/24", "10.0.11.0/24"]
 
@@ -22,6 +22,6 @@ module "vpc" {
 
   tags = {
     Terraform   = "true"
-    Environment = "Production"
+    Environment = var.environment
   }
 }
