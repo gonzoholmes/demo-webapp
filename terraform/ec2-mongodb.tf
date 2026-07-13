@@ -28,7 +28,7 @@ resource "aws_security_group" "mongodb" {
 
   tags = {
     Terraform   = "true"
-    Environment = "dev"
+    Environment = var.environment
   }
 }
 
@@ -70,14 +70,14 @@ resource "aws_secretsmanager_secret_version" "mongodb_app_password" {
 resource "aws_instance" "mongodb" {
   # al2023-ami-2023.7.20250623.1-kernel-6.1-x86_64, deprecated on-purpose (~1yr old) for patching practice
   ami                         = "ami-05ffe3c48a9991133"
-  instance_type               = "t3.micro"
+  instance_type               = var.mongodb_instance_type
   subnet_id                   = module.vpc.public_subnets[0]
   vpc_security_group_ids      = [aws_security_group.mongodb.id]
   associate_public_ip_address = true
   key_name                    = aws_key_pair.mongodb.key_name
   iam_instance_profile        = aws_iam_instance_profile.mongodb_ec2.name
   user_data = templatefile("${path.module}/userdata-mongodb.sh", {
-    bucket_name        = module.s3_bucket.s3_bucket_id
+    bucket_name        = module.mongodb_bucket.s3_bucket_id
     mongo_app_user     = "starsigns_app"
     mongo_app_password = random_password.mongodb_app.result
   })
@@ -85,6 +85,6 @@ resource "aws_instance" "mongodb" {
   tags = {
     Name        = "mongodb"
     Terraform   = "true"
-    Environment = "dev"
+    Environment = var.environment
   }
 }

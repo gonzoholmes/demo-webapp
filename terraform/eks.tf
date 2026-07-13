@@ -24,7 +24,7 @@ module "eks" {
   subnet_ids = [module.vpc.private_subnets[0], module.vpc.private_subnets[1]]
 
   tags = {
-    Environment = "dev"
+    Environment = var.environment
     Terraform   = "true"
   }
 }
