@@ -1,6 +1,6 @@
 name: Terraform Pipeline
 
-run-name: "${{ github.event_name == 'pull_request' && format('plan · {0}', github.event.pull_request.title) || format('apply · {0}', github.event.head_commit.message) }}"
+run-name: "${{ github.event_name == 'pull_request' && format('plan · {0}', github.event.pull_request.title) || github.event_name == 'workflow_dispatch' && 'apply · manual trigger' || format('apply · {0}', github.event.head_commit.message) }}"
 
 on:
   pull_request:
@@ -9,6 +9,7 @@ on:
   push:
     branches: [main]
     paths: ["terraform/**"]
+  workflow_dispatch: {}
 
 defaults:
   run:
@@ -83,7 +84,7 @@ jobs:
         run: exit 1
 
   plan-before-apply:
-    if: github.event_name == 'push'
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     permissions:
       id-token: write
@@ -128,7 +129,7 @@ jobs:
         run: exit 1
 
   apply:
-    if: github.event_name == 'push'
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     needs: plan-before-apply
     runs-on: ubuntu-latest
     environment: Production

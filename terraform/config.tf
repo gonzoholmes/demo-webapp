@@ -23,6 +23,13 @@ resource "aws_s3_bucket" "config" {
   force_destroy = true
 }
 
+resource "aws_s3_bucket_versioning" "config" {
+  bucket = aws_s3_bucket.config.id
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
 data "aws_iam_policy_document" "config_bucket" {
   statement {
     sid    = "AWSConfigBucketPermissionsCheck"
