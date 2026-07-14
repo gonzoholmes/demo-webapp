@@ -1,6 +1,6 @@
 resource "aws_wafv2_web_acl" "main" {
   name        = "starsigns-app-waf"
-  description = "Baseline managed-rule protection for the app's ALB"
+  description = "Baseline managed-rule protection for the app ALB"
   scope       = "REGIONAL"
 
   default_action {
