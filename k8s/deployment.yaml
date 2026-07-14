@@ -5,6 +5,10 @@
 #     --dry-run=client -o yaml | kubectl apply -f -
 #
 # Requires k8s/cluster-bootstrap.yaml applied first.
+#
+# The Ingress's wafv2-acl-arn annotation also goes stale on every fresh
+# terraform apply — the Web ACL gets a new ARN each time it's recreated.
+# Update it with: terraform -chdir=../terraform output -raw waf_web_acl_arn
 
 ---
 apiVersion: apps/v1
@@ -51,6 +55,7 @@ metadata:
   annotations:
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/wafv2-acl-arn: arn:aws:wafv2:us-east-1:375066138214:regional/webacl/starsigns-app-waf/44dcae86-1749-4591-b94f-525189c35bb6
 spec:
   ingressClassName: alb
   rules:
