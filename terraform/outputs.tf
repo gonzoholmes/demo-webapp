@@ -31,4 +31,8 @@ output "s3_bucket_name" {
   value = module.mongodb_bucket.s3_bucket_id
 }
 
+output "waf_web_acl_arn" {
+  value = aws_wafv2_web_acl.main.arn
+}
+
 
