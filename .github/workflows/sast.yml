@@ -1,0 +1,22 @@
+name: SAST
+
+on:
+  pull_request:
+    branches: [main]
+    paths: ["app/**"]
+
+jobs:
+  snyk-code:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Snyk Code (SAST)
+        uses: snyk/actions/python@master
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          command: code test
