@@ -55,6 +55,10 @@ module "cloudtrail_bucket" {
 
   bucket        = "s3-bucket-gholmes8585-demowebapp-cloudtrail-logs"
   force_destroy = true
+
+  versioning = {
+    enabled = true
+  }
 }
 
 data "aws_iam_policy_document" "cloudtrail_bucket" {
