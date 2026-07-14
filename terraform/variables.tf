@@ -27,3 +27,13 @@ variable "mongodb_instance_type" {
   description = "EC2 instance type for the MongoDB VM"
   type        = string
 }
+
+variable "mongodb_ami_id" {
+  description = "AMI ID for the MongoDB VM"
+  type        = string
+}
+
+variable "eks_kubernetes_version" {
+  description = "Kubernetes version for the EKS cluster"
+  type        = string
+}
