@@ -27,6 +27,7 @@ resource "aws_security_group" "mongodb" {
   }
 
   tags = {
+    Name        = "mongodb"
     Terraform   = "true"
     Environment = var.environment
   }
