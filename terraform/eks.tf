@@ -3,7 +3,7 @@ module "eks" {
   version = "~> 21.0"
 
   name               = "eks-demo-webapp"
-  kubernetes_version = "1.33"
+  kubernetes_version = var.eks_kubernetes_version
 
   # Public API open to any IP for github runners
   endpoint_public_access       = true
