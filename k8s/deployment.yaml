@@ -55,7 +55,7 @@ metadata:
   annotations:
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
-    alb.ingress.kubernetes.io/wafv2-acl-arn: arn:aws:wafv2:us-east-1:375066138214:regional/webacl/starsigns-app-waf/44dcae86-1749-4591-b94f-525189c35bb6
+    alb.ingress.kubernetes.io/wafv2-acl-arn: arn:aws:wafv2:us-east-1:375066138214:regional/webacl/starsigns-app-waf/b9786d21-4c9c-4ccd-9590-3c2fe21304a2
 spec:
   ingressClassName: alb
   rules:
