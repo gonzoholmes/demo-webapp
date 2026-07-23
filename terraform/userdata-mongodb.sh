@@ -20,13 +20,15 @@ until mongosh --quiet --eval "db.adminCommand('ping')" >/dev/null 2>&1; do
   sleep 1
 done
 
-mongosh --quiet --eval '
-db.getSiblingDB("starsigns").createUser({
-  user: "${mongo_app_user}",
-  pwd: "${mongo_app_password}",
-  roles: [{ role: "readWrite", db: "starsigns" }]
+MONGO_APP_PASSWORD=$(aws secretsmanager get-secret-value --secret-id "${mongo_secret_name}" --region "${aws_region}" --query SecretString --output text)
+
+mongosh --quiet --eval "
+db.getSiblingDB('starsigns').createUser({
+  user: '${mongo_app_user}',
+  pwd: '$MONGO_APP_PASSWORD',
+  roles: [{ role: 'readWrite', db: 'starsigns' }]
 })
-'
+"
 
 cat <<'EOF' | sudo tee -a /etc/mongod.conf > /dev/null
 
@@ -40,11 +42,13 @@ cat > /usr/local/bin/mongodb-backup.sh <<'EOF'
 #!/bin/bash
 set -euo pipefail
 
+MONGO_APP_PASSWORD=$(aws secretsmanager get-secret-value --secret-id "${mongo_secret_name}" --region "${aws_region}" --query SecretString --output text)
+
 TIMESTAMP=$(date -u +%Y%m%dT%H%M%SZ)
 WORKDIR=$(mktemp -d)
 ARCHIVE="mongodb-backup-$TIMESTAMP.tar.gz"
 
-mongodump --db starsigns --username "${mongo_app_user}" --password "${mongo_app_password}" --authenticationDatabase starsigns --out "$WORKDIR/dump"
+mongodump --db starsigns --username "${mongo_app_user}" --password "$MONGO_APP_PASSWORD" --authenticationDatabase starsigns --out "$WORKDIR/dump"
 tar -czf "$WORKDIR/$ARCHIVE" -C "$WORKDIR" dump
 
 aws s3 cp "$WORKDIR/$ARCHIVE" "s3://${bucket_name}/$ARCHIVE"

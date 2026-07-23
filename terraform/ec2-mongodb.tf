@@ -78,9 +78,10 @@ resource "aws_instance" "mongodb" {
   key_name                    = aws_key_pair.mongodb.key_name
   iam_instance_profile        = aws_iam_instance_profile.mongodb_ec2.name
   user_data = templatefile("${path.module}/userdata-mongodb.sh", {
-    bucket_name        = module.mongodb_bucket.s3_bucket_id
-    mongo_app_user     = "starsigns_app"
-    mongo_app_password = random_password.mongodb_app.result
+    bucket_name       = module.mongodb_bucket.s3_bucket_id
+    mongo_app_user    = "starsigns_app"
+    mongo_secret_name = aws_secretsmanager_secret.mongodb_app_password.name
+    aws_region        = var.aws_region
   })
 
   tags = {

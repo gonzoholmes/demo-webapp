@@ -36,6 +36,19 @@ resource "aws_iam_instance_profile" "mongodb_ec2" {
   role = aws_iam_role.mongodb_ec2.name
 }
 
+data "aws_iam_policy_document" "mongodb_secrets_read" {
+  statement {
+    actions   = ["secretsmanager:GetSecretValue"]
+    resources = [aws_secretsmanager_secret.mongodb_app_password.arn]
+  }
+}
+
+resource "aws_iam_role_policy" "mongodb_secrets_read" {
+  name   = "mongodb-secrets-read"
+  role   = aws_iam_role.mongodb_ec2.id
+  policy = data.aws_iam_policy_document.mongodb_secrets_read.json
+}
+
 # Intentional: VM role is overpermissive
 resource "aws_iam_role_policy_attachment" "mongodb_ec2_full_access" {
   role       = aws_iam_role.mongodb_ec2.name
