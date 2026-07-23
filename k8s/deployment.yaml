@@ -1,10 +1,10 @@
-# starsigns-secret not committed — create before applying (re-run after
-# every terraform apply, since IP/password change on redeploy):
+# starsigns-secret not committed — create before applying:
 #   kubectl create secret generic starsigns-secret \
 #     --from-literal=MONGO_URI="mongodb://starsigns_app:$(terraform -chdir=../terraform output -raw mongodb_app_password)@$(terraform -chdir=../terraform output -raw mongodb_private_ip):27017/starsigns" \
 #     --dry-run=client -o yaml | kubectl apply -f -
+# Re-run after every terraform apply (IP/password change on redeploy).
 #
-# Requires k8s/cluster-bootstrap.yaml applied first.
+# Requires k8s/cluster-bootstrap.yaml applied first (ServiceAccount + alb IngressClass).
 #
 # The Ingress's wafv2-acl-arn annotation also goes stale on every fresh
 # terraform apply — the Web ACL gets a new ARN each time it's recreated.
@@ -55,7 +55,7 @@ metadata:
   annotations:
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
-    alb.ingress.kubernetes.io/wafv2-acl-arn: arn:aws:wafv2:us-east-1:375066138214:regional/webacl/starsigns-app-waf/b9786d21-4c9c-4ccd-9590-3c2fe21304a2
+    alb.ingress.kubernetes.io/wafv2-acl-arn: arn:aws:wafv2:us-east-1:375066138214:regional/webacl/starsigns-app-waf/30207189-a57f-4d8f-af4f-a005cc2dd034
 spec:
   ingressClassName: alb
   rules:

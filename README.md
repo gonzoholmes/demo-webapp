@@ -1,20 +1,20 @@
 # StarSigns
 
-A small Flask + MongoDB web app, deployed to AWS via Terraform and Kubernetes (EKS). Built as a hands-on cloud security exercise — several misconfigurations are **intentional**, not oversights (see below).
+A small Flask + MongoDB web app, deployed to AWS via Terraform and Kubernetes (EKS). Built as a hands-on cloud security exercise: several misconfigurations are **intentional**, not oversights (see below).
 
 ## Repo layout
 
-- **`app/`** — Flask + PyMongo web app, containerized via `app/Dockerfile`
-- **`terraform/`** — AWS infrastructure: VPC, EKS, an EC2 MongoDB instance, S3 buckets, CloudTrail, GuardDuty, AWS Config
-- **`k8s/`** — Kubernetes manifests: the app's Deployment/Service/Ingress, plus a one-time cluster bootstrap (ServiceAccount, RBAC, IngressClass)
-- **`.github/workflows/`** — CI/CD pipelines (below)
+- **`app/`**: Flask + PyMongo web app, containerized via `app/Dockerfile`
+- **`terraform/`**: AWS infrastructure: VPC, EKS, an EC2 MongoDB instance, S3 buckets, CloudTrail, GuardDuty, AWS Config, WAF
+- **`k8s/`**: Kubernetes manifests: the app's Deployment/Service/Ingress, plus a one-time cluster bootstrap (ServiceAccount, RBAC, IngressClass)
+- **`.github/workflows/`**: CI/CD pipelines (below)
 
 ## CI/CD
 
-Two independent GitHub Actions pipelines, both authenticating to AWS via OIDC — no stored credentials:
+Two independent GitHub Actions pipelines, both authenticating to AWS via OIDC, no stored credentials:
 
-- **`terraform.yml`** — plans on every PR touching `terraform/**`; applies on merge to `main`, gated behind a manual approval
-- **`app.yml`** — builds and vulnerability-scans the container image on every PR touching `app/**`; pushes to ECR and deploys to EKS on merge to `main`
+- **`terraform.yml`**: plans on every PR touching `terraform/**`; applies on merge to `main`, gated behind a manual approval
+- **`app.yml`**: builds and vulnerability-scans the container image on every PR touching `app/**`; pushes to ECR and deploys to EKS on merge to `main`
 
 ## Deploying
 
@@ -38,4 +38,4 @@ This is a security exercise, not production code. The following are deliberate:
 - S3 backup bucket: public read and list
 - App's Kubernetes ServiceAccount: bound to `cluster-admin`
 
-AWS Config, GuardDuty, and CloudTrail are all enabled and will flag these.
+AWS Config, GuardDuty, and CloudTrail (detective) plus a WAF on the ALB (preventative) are all enabled and will flag/block against these.
