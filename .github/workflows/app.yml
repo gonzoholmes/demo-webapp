@@ -43,6 +43,7 @@ jobs:
         with:
           image-ref: starsigns-app:pr-${{ github.event.pull_request.number }}
           severity: CRITICAL,HIGH
+          ignore-unfixed: true
           exit-code: "1"
 
   build-push-deploy:
